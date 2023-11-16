@@ -1,0 +1,61 @@
+<!-- confirm_delete.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác Nhận Xóa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .confirmation-container {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #d9534f;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        a {
+            color: #333;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <h1>Xác Nhận Xóa</h1>
+        <p>Bạn có chắc muốn xóa công việc "{{ task['name'] }}" không?</p>
+        <form method="POST" action="{{ url_for('delete_task', task_index=task_index) }}">
+            <button type="submit">Xác Nhận Xóa</button>
+            <a href="{{ url_for('index') }}">Hủy</a>
+        </form>
+    </div>
+</body>
+</html>

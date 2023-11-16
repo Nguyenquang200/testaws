@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Task</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        form {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            margin: 10px auto;
+            padding: 20px;
+            max-width: 400px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        label {
+            margin-bottom: 10px;
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea,
+        select,
+        input[type="datetime-local"],
+        input[type="file"],
+        input[type="range"] {
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        input[type="range"] {
+            margin-bottom: 5px;
+        }
+
+        output {
+            display: block;
+            margin-top: 5px;
+            color: #555;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Edit Task</h1>
+    <form action="{{ url_for('edit_task', task_index=task_index) }}" method="post" enctype="multipart/form-data">
+        <label for="task_title">Tiêu đề công việc:</label>
+        <input type="text" id="task_title" name="task_title" value="{{ task['title'] }}" required>
+
+        <label for="task_content">Nội dung công việc:</label>
+        <textarea id="task_content" name="task_content" rows="4" required>{{ task['content'] }}</textarea>
+
+        <label for="priority">Mức độ ưu tiên:</label>
+        <select id="priority" name="priority">
+            <option value="Cao" {% if task['priority'] == 'Cao' %}selected{% endif %}>Cao</option>
+            <option value="Trung bình" {% if task['priority'] == 'Trung bình' %}selected{% endif %}>Trung bình</option>
+            <option value="Thấp" {% if task['priority'] == 'Thấp' %}selected{% endif %}>Thấp</option>
+        </select>
+
+        <label for="due_date">Hạn Cuối:</label>
+        <input type="datetime-local" id="due_date" name="due_date" value="{{ task['due_date'] }}" required>
+
+        <label for="category">Danh mục:</label>
+        <select id="category" name="category">
+            <option value="Công Việc" {% if task['category'] == 'Công Việc' %}selected{% endif %}>Công Việc</option>
+            <option value="Cá Nhân" {% if task['category'] == 'Cá Nhân' %}selected{% endif %}>Cá Nhân</option>
+            <option value="Mua Sắm" {% if task['category'] == 'Mua Sắm' %}selected{% endif %}>Mua Sắm</option>
+        </select>
+
+        <label for="attachment">Tệp đính kèm:</label>
+        <input type="file" id="attachment" name="attachment">
+
+        {% if task['attachment'] %}
+        <label for="current_attachment">Tệp đính kèm hiện tại: {{ task['attachment'] }}</label>
+        {% endif %}
+
+        <label for="completion">Mức độ hoàn thành:</label>
+        <input type="range" id="completion" name="completion" min="0" max="100" value="{{ task['completion'] | default(0) }}" step="1" oninput="validateCompletion(this)">
+        <output>{{ task['completion'] | default(0) }}%</output>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <script>
+        function validateCompletion(input) {
+            if (input.value < 0) {
+                input.value = 0;
+            } else if (input.value > 100) {
+                input.value = 100;
+            }
+
+            // Update the output element with the current value
+            document.querySelector('output').textContent = input.value + '%';
+        }
+    </script>
+</body>
+
+</html>

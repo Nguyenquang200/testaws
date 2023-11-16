@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Công Việc</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #343a40;
+        }
+
+        .btn {
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-info, .btn-success, .btn-warning {
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            filter: brightness(90%);
+        }
+
+        .card {
+            border: none;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            background-color: #fff;
+        }
+
+        .card:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .list-group-item {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        .container {
+            max-width: 100%;
+        }
+
+        .btn:hover {
+            transform: scale(1.1); /* Phóng to nhỏ khi di chuột qua */
+        }
+
+        .card {
+            border: none;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bóng nhẹ */
+            transition: box-shadow 0.3s ease;
+            background-color: #fff;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Bóng lớn hơn khi di chuột qua */
+        }
+
+        .list-group-item {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #d3d3d3; /* Màu xám nhạt khi di chuột qua */
+        }
+
+        .container {
+            max-width: 800px; /* Điều chỉnh cho đọc dễ dàng hơn */
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h1 class="mb-4">Quản Lý Công Việc</h1>
+        <div class="mb-3">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Đăng xuất</a>
+            <a href="{{ url_for('add_task_page') }}" class="btn btn-primary">Thêm công việc mới</a>
+            <div class="btn-group">
+                <a href="{{ url_for('sort_tasks', sort_criteria='due_date') }}" class="btn btn-info">Sắp xếp theo hạn chót</a>
+                <a href="{{ url_for('sort_tasks', sort_criteria='priority') }}" class="btn btn-info">Sắp xếp theo ưu tiên</a>
+                <a href="{{ url_for('sort_tasks', sort_criteria='completed') }}" class="btn btn-info">Sắp xếp theo hoàn thành</a>
+                <a href="{{ url_for('stats') }}" class="btn btn-info">Xem Thống Kê</a>
+            </div>
+        </div>
+        <div id="notifications"></div>
+        {% if tasks %}
+            {% for task in tasks %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>{{ task['title'] }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Tiến độ:</strong> {{ task.progress }}%</p>
+                        <p><strong>Nội dung:</strong> {{ task['content'] }}</p>
+                        <p><strong>Ưu tiên:</strong> {{ task['priority'] }}</p>
+                        <p><strong>Ngày hết hạn:</strong> {{ task['due_date'].strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p><strong>Danh mục:</strong> {{ task['category'] }}</p>
+                        {% if task['completed'] %}
+                            <p><strong>Trạng thái:</strong> Đã hoàn thành</p>
+                            {% if task['attachment'] %}
+                                <p><strong>Tệp đính kèm:</strong> {{ attachment_filename }}</p>
+                                <a href="{{ url_for('view_attachment', task_index=loop.index0) }}" class="btn btn-primary">Xem đính kèm</a>
+                            {% endif %}
+                        {% else %}
+                            {% if task['attachment'] %}
+                                <p><strong>Tệp đính kèm:</strong> {{ attachment_filename }}</p>
+                                <a href="{{ url_for('view_attachment', task_index=loop.index0) }}" class="btn btn-primary">Xem đính kèm</a>
+                            {% endif %}
+                            <a href="{{ url_for('complete_task', task_index=loop.index0) }}" class="btn btn-success">Hoàn thành</a>
+                        {% endif %}
+                        <a href="{{ url_for('edit_task', task_index=loop.index0) }}" class="btn btn-warning">Chỉnh sửa</a>
+                        <a href="{{ url_for('confirm_delete', task_index=loop.index0) }}" class="btn btn-danger">Xóa</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Không có công việc nào. <a href="{{ url_for('add_task_page') }}">Thêm công việc mới</a>.</p>
+        {% endif %}
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('notification', function (data) {
+            document.getElementById('notifications').innerHTML += '<div class="alert alert-warning" role="alert">' + data.data + '</div>';
+        });
+    </script>
+</body>
+</html>

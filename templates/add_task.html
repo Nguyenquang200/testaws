@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm công việc mới</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        input[type="text"], select, input[type="datetime-local"] {
+            padding: 10px;
+            width: calc(100% - 22px);
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        form {
+            margin-top: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        form input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        form button {
+            background-color: #337ab7;
+        }
+
+        form button:hover {
+            background-color: #286090;
+        }
+
+        @media (max-width: 600px) {
+            input[type="text"], select, input[type="datetime-local"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Thêm công việc mới</h1>
+    <form action="{{ url_for('add_task') }}" method="post" enctype="multipart/form-data">
+        <label for="attachment">Đính Kèm Tệp</label>
+        <input type="file" name="attachment" id="attachment" accept="*/*">
+        <br>
+
+        <label for="task_title">Tiêu đề công việc</label>
+        <input type="text" name="task_title" id="task_title" placeholder="Nhập tiêu đề công việc" required>
+
+        <label for="task_content">Nội dung công việc</label>
+        <br>
+        <textarea name="task_content" id="task_content" placeholder="Nhập nội dung công việc" rows="4" required></textarea>
+        <br>
+
+        <label for="priority">Mức độ ưu tiên</label>
+        <select name="priority" id="priority">
+            <option value="Cao">Cao</option>
+            <option value="Trung bình">Trung bình</option>
+            <option value="Thấp">Thấp</option>
+        </select>
+
+        <label for="due_date">Hạn Cuối</label>
+        <input type="datetime-local" name="due_date" id="due_date" required>
+        <br>
+
+        <label for="category">Danh Mục</label>
+        <select name="category" id="category">
+            <option value="Công Việc">Công Việc</option>
+            <option value="Cá Nhân">Cá Nhân</option>
+            <option value="Mua Sắm">Mua Sắm</option>
+        </select>
+
+        <button type="submit">Thêm công việc</button>
+    </form>
+</body>
+</html>
